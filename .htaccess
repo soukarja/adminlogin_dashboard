@@ -1,0 +1,8 @@
+RewriteEngine On
+
+
+#RewriteRule ^changepassword\.html$ index.php
+RewriteRule ^change-password$ changepassword.php
+RewriteRule ^login$ index.php
+RewriteRule ^logout$ logout.php
+RewriteRule ^new-user(.*)$ newuser.php

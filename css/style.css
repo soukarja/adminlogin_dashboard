@@ -45,6 +45,38 @@ html {
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 
+
+  .passwordBox {
+    position: relative;
+  }
+
+  .passwordBox .toggles span {
+    font-size: 1.3rem;
+    cursor: pointer;
+    background: #fafafa;
+    height: 30px;
+    width: 30px;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .passwordBox .toggles {
+    position: absolute;
+    right: 10px;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .passwordBox .toggles span:last-child {
+    display: none;
+  }
+
 article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
   display: block; }
 

@@ -45,11 +45,23 @@ $data = fetchData("SELECT * FROM `$table_name` WHERE `id` = $id");
 
                 <div class="form-group mb-3">
                   <label class="label" for="password">New Password</label>
-                  <input type="password" class="form-control" placeholder="Password" id="password" required />
+                  <div class="passwordBox">
+                    <input type="password" class="form-control" placeholder="Password" id="password" required />
+                    <div class="toggles">
+                      <span class="unhide" title="Show password"><i class="fa fa-eye" aria-hidden="true"></i></span>
+                      <span class="hide" title="Hide password"><i class="fa fa-eye-slash" aria-hidden="true"></i></span>
+                    </div>
+                  </div>
                 </div>
                 <div class="form-group mb-3">
                   <label class="label" for="repeatpassword">Repeat New Password</label>
-                  <input type="password" class="form-control" placeholder="Password" id="repeatpassword" required />
+                  <div class="passwordBox">
+                    <input type="password" class="form-control" placeholder="Password" id="repeatpassword" required />
+                    <div class="toggles">
+                      <span class="unhide" title="Show password"><i class="fa fa-eye" aria-hidden="true"></i></span>
+                      <span class="hide" title="Hide password"><i class="fa fa-eye-slash" aria-hidden="true"></i></span>
+                    </div>
+                  </div>
                 </div>
                 <div class="form-group">
                   <button type="submit" class="form-control btn btn-primary submit px-3">
@@ -99,7 +111,7 @@ $data = fetchData("SELECT * FROM `$table_name` WHERE `id` = $id");
       id: <?php echo $id; ?>
     }, function(data) {
       if (data == "success")
-        window.open('<?php echo $auth_url."/?msg=".urlencode("Password Changed Successfully") ?>', '_self');
+        window.open('<?php echo $auth_url . "/?msg=" . urlencode("Password Changed Successfully") ?>', '_self');
       else
         errMsgBox.html(data);
     });

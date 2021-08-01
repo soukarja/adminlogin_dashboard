@@ -20,6 +20,7 @@ if (isset($_GET['msg']))
 
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -55,7 +56,13 @@ if (isset($_GET['msg']))
                 </div>
                 <div class="form-group mb-3">
                   <label class="label" for="password">Password</label>
-                  <input type="password" class="form-control" placeholder="Password" id="password" required />
+                  <div class="passwordBox">
+                    <input type="password" class="form-control" placeholder="Password" id="password" required />
+                    <div class="toggles">
+                      <span class="unhide" title="Show password"><i class="fa fa-eye" aria-hidden="true"></i></span>
+                      <span class="hide" title="Hide password"><i class="fa fa-eye-slash" aria-hidden="true"></i></span>
+                    </div>
+                  </div>
                 </div>
                 <div class="form-group">
                   <button type="submit" class="form-control btn btn-primary submit px-3">

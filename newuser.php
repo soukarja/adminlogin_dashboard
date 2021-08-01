@@ -10,7 +10,7 @@ if (executeQuery("DESCRIBE `$table_name`") && countRowsInTable($table_name) > 0)
       exit;
     } else {
       $data = fetchData("SELECT * FROM `$table_name` WHERE id = $id");
-      if ($data['username'] != "" || $data["password"] != '') {
+      if ($data["password"] != '') {
         header("location: $auth_url");
         exit;
       }
@@ -19,6 +19,8 @@ if (executeQuery("DESCRIBE `$table_name`") && countRowsInTable($table_name) > 0)
     header("location: $auth_url");
     exit;
   }
+} else {
+  $roles = [];
 }
 
 
@@ -55,26 +57,46 @@ if (executeQuery("DESCRIBE `$table_name`") && countRowsInTable($table_name) > 0)
                   <p class="social-media d-flex justify-content-end">
                     <?php
 
-  if (isLoggedIn())
-  {
-    if ($id == 0)
-    {
-      echo '<button title="Copy Invite Link" id="copyLink" class="social-icon d-flex align-items-center justify-content-center" style="outline: none;"><span class="fa fa-clone"></span></button>';
-    }
-    else{
-      echo '<button title="Delete Invite Link" id="deleteLink" class="social-icon d-flex align-items-center justify-content-center" style="outline: none;"><span class="fa fa-trash"></span></button>';
-    }
-  }
+                    if (isLoggedIn()) {
+                      if ($id == 0) {
+                        echo '<button title="Copy Invite Link" id="copyLink" class="social-icon d-flex align-items-center justify-content-center" style="outline: none;"><span class="fa fa-clone"></span></button>';
+                      } else {
+                        echo '<button title="Delete Invite Link" id="deleteLink" class="social-icon d-flex align-items-center justify-content-center" style="outline: none;"><span class="fa fa-trash"></span></button>';
+                      }
+                    }
 
-?>
+                    ?>
                   </p>
                 </div>
               </div>
               <form action="#" class="signin-form">
                 <div class="form-group mb-3">
                   <label class="label" for="name">Username</label>
-                  <input type="text" class="form-control" placeholder="Username" id="username" required />
+                  <input type="text" class="form-control" placeholder="Username" id="username" <?php echo trim($data['username']) == "" ? "required" : "disabled value='" . trim($data['username']) . "'" ?> />
                 </div>
+                <?php
+
+                if (count($roles) > 0) {
+                  echo '<div class="form-group mb-3">
+  <label class="label" for="name">User Role</label>
+  <select name="role" id="role" class="form-control" ' . ($id != 0 ? "disabled" : "") . '>';
+
+                  $x = 1;
+                  foreach ($roles as $role) {
+                    echo "<option value='" . $x++ . "'>$role</option>";
+                  }
+
+                  echo '</select>
+</div>';
+
+                  if ($id != 0) {
+                    echo '<script>document.querySelector("#role").value ="' . $data['role'] . '";</script>';
+                  }
+                }
+
+
+                ?>
+
                 <div class="form-group mb-3">
                   <label class="label" for="password">Password</label>
                   <input type="password" class="form-control" placeholder="Password" id="password" required />
@@ -107,40 +129,57 @@ if (executeQuery("DESCRIBE `$table_name`") && countRowsInTable($table_name) > 0)
 
 <script>
   var copyId = "";
-  $("#copyLink").click(function() {
 
-    if (copyId == ""){
-    $.post('<?php echo $auth_url ?>/functions.php', {
-      action: "copyLink"
-    }, function(data) {
-      copyId = data;
-      copyText(data);
-    });
-  }
-  else{
-    copyText(copyId);
-  }
+
+  $("#copyLink").click(function() {
+    var username = $("#username").val().trim();
+    var role = "";
+    <?php
+
+    if (count($roles) > 0) {
+      echo 'role = $("#role").val();';
+    }
+
+    ?>
+
+    $("#errmsg").html("");
+    if (copyId == "") {
+      $.post('<?php echo $auth_url ?>/functions.php', {
+        action: "copyLink",
+        username: username,
+        role: role
+      }, function(data) {
+        if (!data.includes('Error')) {
+          copyId = data;
+          copyText(data);
+        } else {
+          $("#errmsg").html(data);
+        }
+      });
+    } else {
+      copyText(copyId);
+    }
   });
 
 
-  $("#deleteLink").click(function(){
+  $("#deleteLink").click(function() {
     var errMsgBox = $("#errmsg");
 
-    if (confirm("Do you really want to delete this invite link?")){
+    if (confirm("Do you really want to delete this invite link?")) {
       $.post('<?php echo $auth_url ?>/functions.php', {
-      action: "deleteLink",
-      id: <?php echo $id; ?>
-    }, function(data) {
-      if (data == "success")
-        window.open('<?php echo $auth_url."/?msg=".urlencode("Link Deleted Successfully") ?>', '_self');
-      else
-        errMsgBox.html(data);
-    });
+        action: "deleteLink",
+        id: <?php echo $id; ?>
+      }, function(data) {
+        if (data == "success")
+          window.open('<?php echo $auth_url . "/?msg=" . urlencode("Link Deleted Successfully") ?>', '_self');
+        else
+          errMsgBox.html(data);
+      });
     }
 
   });
 
-  function copyText(link){
+  function copyText(link) {
 
     var code = document.createElement('input');
     code.value = link;
@@ -148,7 +187,7 @@ if (executeQuery("DESCRIBE `$table_name`") && countRowsInTable($table_name) > 0)
     code.select();
     code.setSelectionRange(0, 9999999); /* For mobile devices */
 
-  /* Copy the text inside the text field */
+    /* Copy the text inside the text field */
     document.execCommand("copy");
 
     code.remove();
@@ -164,6 +203,15 @@ if (executeQuery("DESCRIBE `$table_name`") && countRowsInTable($table_name) > 0)
     var repeatpassword = $("#repeatpassword").val();
     var errMsgBox = $("#errmsg");
     errMsgBox.html("");
+
+    var role = "";
+    <?php
+
+    if (count($roles) > 0) {
+      echo 'role = $("#role").val();';
+    }
+
+    ?>
 
     if (username == "") {
       errMsgBox.text("Please Enter a Username");
@@ -181,10 +229,11 @@ if (executeQuery("DESCRIBE `$table_name`") && countRowsInTable($table_name) > 0)
       action: "newuser",
       username: username,
       password: password,
+      role: role,
       id: <?php echo $id; ?>
     }, function(data) {
       if (data == "success")
-        window.open('<?php echo $auth_url."/?msg=".urlencode("Account Created Successfully") ?>', '_self');
+        window.open('<?php echo $auth_url . "/?msg=" . urlencode("Account Created Successfully") ?>', '_self');
       else
         errMsgBox.html(data);
     });

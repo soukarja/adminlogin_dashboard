@@ -6,7 +6,10 @@ require 'settings/sql.php';
 require 'settings/settings.php';
 
 
-
+$roles = [
+    "Admin",
+    "Editor"
+];
 $table_name = "users";
 $auth_directory = 'auth';
 $auth_url = $siteLink . $auth_directory;
